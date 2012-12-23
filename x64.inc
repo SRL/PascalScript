@@ -32,7 +32,11 @@ asm
   mov rdx, aStack
   jmp @compareitems
 @work:
+{$IFDEF FPC}
+  push qword ptr [rdx]
+{$ELSE}
   push [rdx]
+{$IFEND}
   dec rcx
   sub rdx,8
 @compareitems:
