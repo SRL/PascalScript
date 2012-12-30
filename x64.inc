@@ -129,7 +129,11 @@ asm
   mov rax, rdx
   jmp @compareitems
 @work:
+  {$IFDEF FPC}
+  push qword ptr [rcx]
+  {$ELSE}
   push [rcx]
+  {$ENDIF}
   dec r8
   sub rcx,8
 @compareitems:
