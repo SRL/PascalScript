@@ -63,10 +63,9 @@ uses
   ,ExtCtrls
   ,Buttons
   ,Themes
-  ,ComCtrls
   ,CheckLst
   ,StdCtrls
-  ;
+  ,ComCtrls;
  
 
 (* === compile-time registration functions === *)
@@ -75,15 +74,6 @@ procedure SIRegister_TTabControl(CL: TPSPascalCompiler);
 begin
   //with RegClassS(CL,'TCustomTabControl', 'TTabControl') do
   with CL.AddClassN(CL.FindClass('TCustomTabControl'),'TTabControl') do
-  begin
-  end;
-end;
-
-(*----------------------------------------------------------------------------*)
-procedure SIRegister_TCustomTabControl(CL: TPSPascalCompiler);
-begin
-  //with RegClassS(CL,'TCustomControl', 'TCustomTabControl') do
-  with CL.AddClassN(CL.FindClass('TCustomControl'),'TCustomTabControl') do
   begin
     RegisterMethod('Function IndexOfTabAt( X, Y : Integer) : Integer');
     RegisterMethod('Function GetHitTestInfoAt( X, Y : Integer) : THitTests');
@@ -100,12 +90,21 @@ begin
 end;
 
 (*----------------------------------------------------------------------------*)
+procedure SIRegister_TCustomTabControl(CL: TPSPascalCompiler);
+begin
+  //with RegClassS(CL,'TCustomControl', 'TCustomTabControl') do
+  with CL.AddClassN(CL.FindClass('TCustomControl'),'TCustomTabControl') do
+  begin
+  end;
+end;
+
+(*----------------------------------------------------------------------------*)
 procedure SIRegister_TTabControlNoteBookStrings(CL: TPSPascalCompiler);
 begin
   //with RegClassS(CL,'TTabControlStrings', 'TTabControlNoteBookStrings') do
   with CL.AddClassN(CL.FindClass('TTabControlStrings'),'TTabControlNoteBookStrings') do
   begin
-    RegisterProperty('NoteBook', 'TNoteBook', iptr);
+    RegisterProperty('NoteBook', 'TCustomTabControl', iptr);
   end;
 end;
 
@@ -294,23 +293,23 @@ end;
 
 (* === run-time registration functions === *)
 (*----------------------------------------------------------------------------*)
-procedure TCustomTabControlTabs_W(Self: TCustomTabControl; const T: TStrings);
+procedure TTabControlTabs_W(Self: TTabControl; const T: TStrings);
 begin Self.Tabs := T; end;
 
 (*----------------------------------------------------------------------------*)
-procedure TCustomTabControlTabs_R(Self: TCustomTabControl; var T: TStrings);
+procedure TTabControlTabs_R(Self: TTabControl; var T: TStrings);
 begin T := Self.Tabs; end;
 
 (*----------------------------------------------------------------------------*)
-procedure TCustomTabControlTabIndex_W(Self: TCustomTabControl; const T: Integer);
+procedure TTabControlTabIndex_W(Self: TTabControl; const T: Integer);
 begin Self.TabIndex := T; end;
 
 (*----------------------------------------------------------------------------*)
-procedure TCustomTabControlTabIndex_R(Self: TCustomTabControl; var T: Integer);
+procedure TTabControlTabIndex_R(Self: TTabControl; var T: Integer);
 begin T := Self.TabIndex; end;
 
 (*----------------------------------------------------------------------------*)
-procedure TTabControlNoteBookStringsNoteBook_R(Self: TTabControlNoteBookStrings; var T: TNoteBook);
+procedure TTabControlNoteBookStringsNoteBook_R(Self: TTabControlNoteBookStrings; var T: TCustomTabControl);
 begin T := Self.NoteBook; end;
 
 (*----------------------------------------------------------------------------*)
@@ -584,6 +583,17 @@ procedure RIRegister_TTabControl(CL: TPSRuntimeClassImporter);
 begin
   with CL.Add(TTabControl) do
   begin
+    RegisterMethod(@TTabControl.IndexOfTabAt, 'IndexOfTabAt');
+    RegisterMethod(@TTabControl.GetHitTestInfoAt, 'GetHitTestInfoAt');
+    RegisterMethod(@TTabControl.IndexOfTabWithCaption, 'IndexOfTabWithCaption');
+    RegisterMethod(@TTabControl.TabRect, 'TabRect');
+    RegisterMethod(@TTabControl.RowCount, 'RowCount');
+    RegisterMethod(@TTabControl.ScrollTabs, 'ScrollTabs');
+    RegisterMethod(@TTabControl.BeginUpdate, 'BeginUpdate');
+    RegisterMethod(@TTabControl.EndUpdate, 'EndUpdate');
+    RegisterMethod(@TTabControl.IsUpdating, 'IsUpdating');
+    RegisterPropertyHelper(@TTabControlTabIndex_R,@TTabControlTabIndex_W,'TabIndex');
+    RegisterPropertyHelper(@TTabControlTabs_R,@TTabControlTabs_W,'Tabs');
   end;
 end;
 
@@ -592,17 +602,7 @@ procedure RIRegister_TCustomTabControl(CL: TPSRuntimeClassImporter);
 begin
   with CL.Add(TCustomTabControl) do
   begin
-    RegisterMethod(@TCustomTabControl.IndexOfTabAt, 'IndexOfTabAt');
-    RegisterMethod(@TCustomTabControl.GetHitTestInfoAt, 'GetHitTestInfoAt');
-    RegisterMethod(@TCustomTabControl.IndexOfTabWithCaption, 'IndexOfTabWithCaption');
-    RegisterMethod(@TCustomTabControl.TabRect, 'TabRect');
-    RegisterMethod(@TCustomTabControl.RowCount, 'RowCount');
-    RegisterMethod(@TCustomTabControl.ScrollTabs, 'ScrollTabs');
-    RegisterMethod(@TCustomTabControl.BeginUpdate, 'BeginUpdate');
-    RegisterMethod(@TCustomTabControl.EndUpdate, 'EndUpdate');
-    RegisterMethod(@TCustomTabControl.IsUpdating, 'IsUpdating');
-    RegisterPropertyHelper(@TCustomTabControlTabIndex_R,@TCustomTabControlTabIndex_W,'TabIndex');
-    RegisterPropertyHelper(@TCustomTabControlTabs_R,@TCustomTabControlTabs_W,'Tabs');
+
   end;
 end;
 
@@ -821,14 +821,14 @@ end;
 (*----------------------------------------------------------------------------*)
 procedure RIRegister_ComCtrls(CL: TPSRuntimeClassImporter);
 begin
-  with CL.Add(TStatusBar) do
+  with CL.Add(TStatusBar) do;
   RIRegister_TStatusPanel(CL);
   RIRegister_TStatusPanels(CL);
   RIRegister_TStatusBar(CL);
-  with CL.Add(TPageControl) do
+  with CL.Add(TPageControl) do;
   RIRegister_TTabSheet(CL);
   RIRegister_TPageControl(CL);
-  with CL.Add(TCustomTabControl) do
+  with CL.Add(TCustomTabControl) do;
   RIRegister_TTabControlStrings(CL);
   RIRegister_TTabControlNoteBookStrings(CL);
   RIRegister_TCustomTabControl(CL);

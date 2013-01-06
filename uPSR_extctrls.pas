@@ -30,7 +30,7 @@ uses
   {$IFDEF CLX}
   QExtCtrls, QGraphics;
   {$ELSE}
-  ExtCtrls, Graphics,classes;
+  ExtCtrls, Graphics;
   {$ENDIF}
 
 procedure RIRegisterTSHAPE(Cl: TPSRuntimeClassImporter);
@@ -44,15 +44,12 @@ begin
 end;
 
 procedure TIMAGECANVAS_R(Self: TIMAGE; var T: TCANVAS); begin T := Self.CANVAS; end;
-procedure TIMAGEPICTURE_R(Self: TIMAGE; var T: TPicture); begin T := Self.Picture; end;
-procedure TIMAGEPICTURE_W(Self: TIMAGE; const T: TPicture); begin Self.Picture := t; end;
 
 procedure RIRegisterTIMAGE(Cl: TPSRuntimeClassImporter);
 begin
   with Cl.Add(TIMAGE) do
   begin
     RegisterPropertyHelper(@TIMAGECANVAS_R, nil, 'CANVAS');
-    RegisterPropertyHelper(@TIMAGEPICTURE_R,@TIMAGEPICTURE_W,'PICTURE');
   end;
 end;
 
@@ -85,31 +82,15 @@ procedure RIRegisterTPANEL(Cl: TPSRuntimeClassImporter);
 begin
   Cl.Add(TPANEL);
 end;
-procedure TPagePageIndex_R(Self: TPAGE; var T: INTEGER); begin T := Self.PageIndex; end;
-procedure TPagePageIndex_W(Self: TPAGE; T: INTEGER); begin Self.PageIndex := T; end;
-procedure TPageOnShow_R(Self: TPAGE; var T: TNotifyEvent); begin T := Self.OnShow; end;
-procedure TPageOnShow_W(Self: TPAGE; T: TNotifyEvent); begin Self.OnShow := T; end;
 {$IFNDEF CLX}
 procedure RIRegisterTPAGE(Cl: TPSRuntimeClassImporter);
 begin
-  with Cl.Add(TPAGE) do
-  begin
-    RegisterPropertyHelper(@TPagePageIndex_R,@TPagePageIndex_W,'PageIndex');
-    RegisterEventPropertyHelper(@TPageOnShow_R,@TPageOnShow_W,'OnShow');
-  end;
+  Cl.Add(TPAGE);
 end;
-
-procedure TNoteBookPageCount_R(Self: TNoteBook; var T: INTEGER); begin T := Self.PageCount; end;
 
 procedure RIRegisterTNOTEBOOK(Cl: TPSRuntimeClassImporter);
 begin
-  with Cl.Add(TNOTEBOOK) do
-  begin
-    {$IFDEF FPC}
-    RegisterMethod(@TNoteBook.TabIndexAtClientPos,'TABINDEXATCLIENTPOS');
-    {$ENDIF}
-    RegisterPropertyHelper(@TNoteBookPageCount_R,nil,'PAGECOUNT');
-  end;
+  Cl.Add(TNOTEBOOK);
 end;
 
 {$IFNDEF FPC}
